@@ -22,7 +22,7 @@ function createUI() {
     title.graphics.font = ScriptUI.newFont(title.graphics.font.name, ScriptUI.FontStyle.BOLD, 14);
     
     // Info text
-    var infoText = window.add("statictext", undefined, "Save and load layer visibility states for the active composition.");
+    var infoText = window.add("statictext", undefined, "Save and load layer visibility states for the active composition as XML.");
     infoText.preferredSize.width = 350;
     
     // Button group
@@ -86,15 +86,17 @@ function saveVisibilityConfig() {
         });
     }
     
-    // Convert to JSON
-    var jsonString = JSON.stringify(visibilityData, null, 2);
+
+    
+    // Convert to XML
+    var xmlString = createXML(visibilityData);
     
     // Save file dialog
-    var file = File.saveDialog("Save Layer Visibility Config", "JSON files:*.json");
+    var file = File.saveDialog("Save Layer Visibility Config", "XML files:*.xml");
     
     if (file) {
         file.open("w");
-        file.write(jsonString);
+        file.write(xmlString);
         file.close();
         alert("Configuration saved successfully!\n" + visibilityData.layers.length + " layers saved.");
     }
@@ -110,17 +112,17 @@ function loadVisibilityConfig() {
     }
     
     // Open file dialog
-    var file = File.openDialog("Load Layer Visibility Config", "JSON files:*.json");
+    var file = File.openDialog("Load Layer Visibility Config", "XML files:*.xml");
     
     if (file) {
         file.open("r");
-        var jsonString = file.read();
+        var xmlString = file.read();
         file.close();
         
         try {
-            var visibilityData = JSON.parse(jsonString);
+            var visibilityData = parseXML(xmlString);
             
-            if (!visibilityData.layers || !visibilityData.layers.length) {
+            if (!visibilityData || !visibilityData.layers || !visibilityData.layers.length) {
                 alert("Invalid configuration file format.");
                 return;
             }
@@ -173,12 +175,71 @@ function loadVisibilityConfig() {
             alert(message);
             
         } catch (e) {
-            alert("Error parsing configuration file: " + e.toString());
+            alert("Error parsing XML configuration file: " + e.toString());
         }
     }
 }
 
-// Helper function to find layer by name
+// Function to create XML string from visibility data
+function createXML(data) {
+    var xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<layerVisibilityConfig>\n';
+    xml += '  <compositionName>' + escapeXML(data.compositionName) + '</compositionName>\n';
+    xml += '  <timestamp>' + data.timestamp + '</timestamp>\n';
+    xml += '  <layers>\n';
+    
+    for (var i = 0; i < data.layers.length; i++) {
+        var layer = data.layers[i];
+        xml += '    <layer>\n';
+        xml += '      <index>' + layer.index + '</index>\n';
+        xml += '      <name>' + escapeXML(layer.name) + '</name>\n';
+        xml += '      <enabled>' + layer.enabled + '</enabled>\n';
+        xml += '    </layer>\n';
+    }
+    
+    xml += '  </layers>\n';
+    xml += '</layerVisibilityConfig>';
+    
+    return xml;
+}
+
+// Function to parse XML string to visibility data
+function parseXML(xmlString) {
+    var xml = new XML(xmlString);
+    var data = {
+        compositionName: xml.compositionName.toString(),
+        timestamp: xml.timestamp.toString(),
+        layers: []
+    };
+    
+    var layersXML = xml.layers.layer;
+    
+    // Handle single layer case
+    if (layersXML.length() == undefined) {
+        layersXML = [layersXML];
+    }
+    
+    for (var i = 0; i < layersXML.length(); i++) {
+        var layerXML = layersXML[i];
+        data.layers.push({
+            index: parseInt(layerXML.index.toString()),
+            name: layerXML.name.toString(),
+            enabled: layerXML.enabled.toString() === "true"
+        });
+    }
+    
+    return data;
+}
+
+// Function to escape XML special characters
+function escapeXML(str) {
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
 function findLayerByName(comp, name) {
     for (var i = 1; i <= comp.numLayers; i++) {
         if (comp.layer(i).name === name) {
