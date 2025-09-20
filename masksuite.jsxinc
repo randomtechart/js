@@ -1,0 +1,388 @@
+// MaskRevealPresets.jsx
+// ======================
+// Full set of 60 mask reveal presets
+// For use with MaskRevealSuite.jsx
+// Each preset takes a Shape object and returns a modified Shape
+
+var MaskRevealPresets = {
+
+    // -----------------------------
+    // Directional Reveals
+    // -----------------------------
+    "Slide Left": function(shape) {
+        var verts = shape.vertices;
+        for (var i = 0; i < verts.length; i++) verts[i][0] = -1000;
+        shape.vertices = verts; return shape;
+    },
+    "Slide Right": function(shape) {
+        var verts = shape.vertices;
+        for (var i = 0; i < verts.length; i++) verts[i][0] = 1000;
+        shape.vertices = verts; return shape;
+    },
+    "Slide Up": function(shape) {
+        var verts = shape.vertices;
+        for (var i = 0; i < verts.length; i++) verts[i][1] = -1000;
+        shape.vertices = verts; return shape;
+    },
+    "Slide Down": function(shape) {
+        var verts = shape.vertices;
+        for (var i = 0; i < verts.length; i++) verts[i][1] = 1000;
+        shape.vertices = verts; return shape;
+    },
+    "Diagonal TL→BR": function(shape) {
+        var verts = [];
+        for (var i = 0; i < 4; i++) verts.push([-1000, -1000]);
+        shape.vertices = verts; return shape;
+    },
+    "Diagonal BR→TL": function(shape) {
+        var verts = [];
+        for (var i = 0; i < 4; i++) verts.push([1000, 1000]);
+        shape.vertices = verts; return shape;
+    },
+    "Diagonal TR→BL": function(shape) {
+        var verts = [];
+        for (var i = 0; i < 4; i++) verts.push([1000, -1000]);
+        shape.vertices = verts; return shape;
+    },
+    "Diagonal BL→TR": function(shape) {
+        var verts = [];
+        for (var i = 0; i < 4; i++) verts.push([-1000, 1000]);
+        shape.vertices = verts; return shape;
+    },
+
+    // -----------------------------
+    // Geometric Shapes
+    // -----------------------------
+    "Ellipse Horizontal Stretch": function(shape) {
+        var verts = [], r = 300, ry = 10;
+        for (var a = 0; a < 2 * Math.PI; a += Math.PI / 12)
+            verts.push([Math.cos(a) * r, Math.sin(a) * ry]);
+        shape.vertices = verts; return shape;
+    },
+    "Ellipse Vertical Stretch": function(shape) {
+        var verts = [], rx = 10, r = 300;
+        for (var a = 0; a < 2 * Math.PI; a += Math.PI / 12)
+            verts.push([Math.cos(a) * rx, Math.sin(a) * r]);
+        shape.vertices = verts; return shape;
+    },
+    "Rectangle Expand": function(shape) {
+        shape.vertices = [[-10,-10],[10,-10],[10,10],[-10,10]];
+        return shape;
+    },
+    "Hexagon Expand": function(shape) {
+        var verts = [], r = 200;
+        for (var i = 0; i < 6; i++)
+            verts.push([Math.cos((i/6)*2*Math.PI)*r, Math.sin((i/6)*2*Math.PI)*r]);
+        shape.vertices = verts; return shape;
+    },
+    "Triangle Expand": function(shape) {
+        shape.vertices = [[0,-200],[173,100],[-173,100]];
+        return shape;
+    },
+    "Pentagon Expand": function(shape) {
+        var verts = [], r = 200;
+        for (var i = 0; i < 5; i++)
+            verts.push([Math.cos((i/5)*2*Math.PI)*r, Math.sin((i/5)*2*Math.PI)*r]);
+        shape.vertices = verts; return shape;
+    },
+    "Octagon Expand": function(shape) {
+        var verts = [], r = 200;
+        for (var i = 0; i < 8; i++)
+            verts.push([Math.cos((i/8)*2*Math.PI)*r, Math.sin((i/8)*2*Math.PI)*r]);
+        shape.vertices = verts; return shape;
+    },
+    "Concentric Circles": function(shape) {
+        var verts = [], r = 50;
+        for (var a = 0; a < 2*Math.PI; a += Math.PI/12)
+            verts.push([Math.cos(a)*r, Math.sin(a)*r]);
+        shape.vertices = verts; return shape;
+    },
+    "Concentric Squares": function(shape) {
+        shape.vertices = [[-50,-50],[50,-50],[50,50],[-50,50]];
+        return shape;
+    },
+    "Diamond Grid": function(shape) {
+        shape.vertices = [[0,-200],[200,0],[0,200],[-200,0]];
+        return shape;
+    },
+
+    // -----------------------------
+    // Line-Based
+    // -----------------------------
+    "Single Line Sweep Horizontal": function(shape) {
+        shape.vertices = [[-500,0],[500,0]];
+        return shape;
+    },
+    "Single Line Sweep Vertical": function(shape) {
+        shape.vertices = [[0,-500],[0,500]];
+        return shape;
+    },
+    "Dual Line Sweep Inward": function(shape) {
+        shape.vertices = [[-500,-500],[-500,500],[500,500],[500,-500]];
+        return shape;
+    },
+    "Dual Line Sweep Outward": function(shape) {
+        shape.vertices = [[0,-500],[0,500],[0,500],[0,-500]];
+        return shape;
+    },
+    "Multiple Line Wipe Vertical": function(shape) {
+        var verts = [];
+        for (var i= -500; i<=500; i+=100)
+            verts.push([i,-500],[i,500]);
+        shape.vertices = verts; return shape;
+    },
+    "Multiple Line Wipe Horizontal": function(shape) {
+        var verts = [];
+        for (var i= -500; i<=500; i+=100)
+            verts.push([-500,i],[500,i]);
+        shape.vertices = verts; return shape;
+    },
+    "Zig-Zag Line Reveal": function(shape) {
+        var verts=[];
+        for (var i=-500;i<=500;i+=100){
+            var y=(i%200==0)?-500:500;
+            verts.push([i,y]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Wave Line Reveal": function(shape) {
+        var verts=[];
+        for (var x=-500;x<=500;x+=50){
+            var y=Math.sin(x/100)*100;
+            verts.push([x,y]);
+        }
+        shape.vertices=verts; return shape;
+    },
+
+    // -----------------------------
+    // Radial Variants
+    // -----------------------------
+    "Pie Slice Sweep CW": function(shape) {
+        shape.vertices = [[0,0],[300,0],[0,300]];
+        return shape;
+    },
+    "Pie Slice Sweep CCW": function(shape) {
+        shape.vertices = [[0,0],[0,300],[-300,0]];
+        return shape;
+    },
+    "Dual Pie Opposite": function(shape) {
+        shape.vertices = [[0,0],[300,0],[0,300],[0,0],[-300,0],[0,-300]];
+        return shape;
+    },
+    "Sunburst": function(shape) {
+        var verts=[];
+        var r=200;
+        for (var i=0;i<12;i++){
+            var angle=(i/12)*2*Math.PI;
+            verts.push([Math.cos(angle)*r,Math.sin(angle)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Spiral Inward": function(shape) {
+        var verts=[], r=300;
+        for (var a=6*Math.PI;a>0;a-=Math.PI/12,r-=10)
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        shape.vertices=verts; return shape;
+    },
+    "Spiral Outward": function(shape) {
+        var verts=[], r=10;
+        for (var a=0;a<6*Math.PI;a+=Math.PI/12,r+=10)
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        shape.vertices=verts; return shape;
+    },
+    "Radial Checkerboard": function(shape) {
+        var verts=[];
+        var r=200;
+        for (var i=0;i<8;i+=2){
+            var a1=(i/8)*2*Math.PI, a2=((i+1)/8)*2*Math.PI;
+            verts.push([0,0],[Math.cos(a1)*r,Math.sin(a1)*r],[Math.cos(a2)*r,Math.sin(a2)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Clock Ticks": function(shape) {
+        var verts=[];
+        var r=200;
+        for (var i=0;i<12;i++){
+            var a=(i/12)*2*Math.PI;
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+
+    // -----------------------------
+    // Patterned Reveals
+    // -----------------------------
+    "Checkerboard Columns First": function(shape) {
+        var verts=[];
+        for (var x=-400;x<=400;x+=200)
+            verts.push([x,-400],[x+100,-400],[x+100,400],[x,400]);
+        shape.vertices=verts; return shape;
+    },
+    "Checkerboard Rows First": function(shape) {
+        var verts=[];
+        for (var y=-400;y<=400;y+=200)
+            verts.push([-400,y],[400,y],[400,y+100],[-400,y+100]);
+        shape.vertices=verts; return shape;
+    },
+    "Brick Pattern": function(shape) {
+        var verts=[];
+        for (var y=-400;y<=400;y+=100)
+            for (var x=-400;x<=400;x+=200)
+                verts.push([x,y],[x+100,y],[x+100,y+50],[x,y+50]);
+        shape.vertices=verts; return shape;
+    },
+    "Honeycomb Pattern": function(shape) {
+        var verts=[];
+        var r=50;
+        for (var i=0;i<6;i++){
+            var a=(i/6)*2*Math.PI;
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Crosshatch Wipe": function(shape) {
+        shape.vertices=[[-400,-400],[400,400],[400,-400],[-400,400]];
+        return shape;
+    },
+    "Lattice Wipe": function(shape) {
+        var verts=[];
+        for (var x=-400;x<=400;x+=100)
+            for (var y=-400;y<=400;y+=100)
+                verts.push([x,y],[x+50,y],[x+50,y+50],[x,y+50]);
+        shape.vertices=verts; return shape;
+    },
+    "Puzzle Pieces": function(shape) {
+        shape.vertices=[[-200,-200],[-100,-200],[-100,-100],[-200,-100]];
+        return shape;
+    },
+    "Mosaic Tiles": function(shape) {
+        var verts=[];
+        for (var x=-400;x<=400;x+=50)
+            for (var y=-400;y<=400;y+=50)
+                verts.push([x,y],[x+25,y],[x+25,y+25],[x,y+25]);
+        shape.vertices=verts; return shape;
+    },
+
+    // -----------------------------
+    // Organic & Irregular
+    // -----------------------------
+    "Random Blob Expand": function(shape) {
+        var verts=[], r=200;
+        for (var a=0;a<2*Math.PI;a+=Math.PI/12){
+            var jitter=(Math.random()*50)-25;
+            verts.push([Math.cos(a)*(r+jitter),Math.sin(a)*(r+jitter)]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Perlin Noise Reveal": function(shape) {
+        var verts=[];
+        var r=200;
+        for (var a=0;a<2*Math.PI;a+=Math.PI/18){
+            var jitter=(Math.random()*80)-40;
+            verts.push([Math.cos(a)*(r+jitter),Math.sin(a)*(r+jitter)]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Ink Bleed Reveal": function(shape) {
+        var verts=[], r=200;
+        for (var a=0;a<2*Math.PI;a+=Math.PI/18){
+            var jitter=(Math.random()*100);
+            verts.push([Math.cos(a)*(r+jitter),Math.sin(a)*(r+jitter)]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Smoke Puff Reveal": function(shape) {
+        var verts=[];
+        for (var a=0;a<2*Math.PI;a+=Math.PI/8){
+            var r=100+Math.random()*50;
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Water Ripple Reveal": function(shape) {
+        var verts=[];
+        for (var a=0;a<2*Math.PI;a+=Math.PI/18){
+            var r=200+Math.sin(a*6)*20;
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Fractal Cracks Reveal": function(shape) {
+        var verts=[];
+        for (var i=0;i<10;i++){
+            var angle=Math.random()*2*Math.PI;
+            var r=200;
+            verts.push([Math.cos(angle)*r,Math.sin(angle)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Torn Edge Reveal": function(shape) {
+        var verts=[];
+        for (var x=-200;x<=200;x+=40){
+            var y=-100+Math.random()*50;
+            verts.push([x,y]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Leaf Vein Reveal": function(shape) {
+        shape.vertices=[[0,0],[0,-200],[50,-100],[0,0],[-50,-100],[0,0]];
+        return shape;
+    },
+
+    // -----------------------------
+    // Motion & Complex
+    // -----------------------------
+    "Spokes Rotate": function(shape) {
+        var verts=[];
+        var r=200;
+        for (var i=0;i<8;i++){
+            var a=(i/8)*2*Math.PI;
+            verts.push([Math.cos(a)*r,Math.sin(a)*r]);
+        }
+        shape.vertices=verts; return shape;
+    },
+    "Fan Blades": function(shape) {
+        shape.vertices=[[0,0],[200,0],[0,200]];
+        return shape;
+    },
+    "Window Blinds Tilt": function(shape) {
+        shape.vertices=[[-200,-200],[200,-200],[200,-150],[-200,-150]];
+        return shape;
+    },
+    "Venetian Blinds Twist": function(shape) {
+        shape.vertices=[[-200,-200],[200,-200],[200,-100],[-200,-100]];
+        return shape;
+    },
+    "Curtains Ease Bounce": function(shape) {
+        shape.vertices=[[-200,-200],[0,-200],[0,200],[-200,200],
+                        [0,-200],[200,-200],[200,200],[0,200]];
+        return shape;
+    },
+    "Curtains Staggered": function(shape) {
+        shape.vertices=[[ -300,-500],[-100,-500],[-100,500],[-300,500],
+                        [100,-500],[300,-500],[300,500],[100,500]];
+        return shape;
+    },
+    "Accordion Horizontal": function(shape) {
+        shape.vertices=[[ -300,-500],[-200,-500],[-200,500],[-300,500],
+                        [ -100,-500],[0,-500],[0,500],[-100,500],
+                        [100,-500],[200,-500],[200,500],[100,500]];
+        return shape;
+    },
+    "Accordion Vertical": function(shape) {
+        shape.vertices=[[ -500,-300],[500,-300],[500,-200],[-500,-200],
+                        [-500,-100],[500,-100],[500,0],[-500,0],
+                        [-500,100],[500,100],[500,200],[-500,200]];
+        return shape;
+    },
+    "Book Page Turn": function(shape) {
+        shape.vertices=[[0,0],[200,-50],[180,200],[0,200]];
+        return shape;
+    },
+    "Shatter Pieces Fly Out": function(shape) {
+        var verts=[];
+        for (var i=0;i<12;i++)
+            verts.push([Math.random()*400-200,Math.random()*400-200]);
+        shape.vertices=verts; return shape;
+    }
+};
